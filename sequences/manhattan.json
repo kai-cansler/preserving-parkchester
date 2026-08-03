@@ -1,0 +1,19 @@
+[
+  {
+    "mode": "replace",
+    "background": "#F4F1EC",
+    "images": [
+      { "slot": "survey", "src": "survey.jpg" },
+      { "slot": "calendar", "src": "calendar.jpg" }
+    ]
+  },
+  {
+    "mode": "replace",
+    "images": [
+      { "slot": "grid-1", "src": "grid-1.jpg" },
+      { "slot": "grid-2", "src": "grid-2.jpg" },
+      { "slot": "grid-3", "src": "grid-3.jpg" },
+      { "slot": "grid-4", "src": "grid-4.jpg" }
+    ]
+  }
+]

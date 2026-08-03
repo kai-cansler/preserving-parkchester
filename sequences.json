@@ -1,0 +1,8 @@
+{
+  "sequences": [
+    { "id": "manhattan", "label": "Manhattan", "jsonPath": "sequences/manhattan.json" },
+    { "id": "parkchester-1", "label": "Parkchester I", "jsonPath": "sequences/parkchester-1.json" },
+    { "id": "parkchester-2", "label": "Parkchester II", "jsonPath": "sequences/parkchester-2.json" },
+    { "id": "parkchester-3", "label": "Parkchester III", "jsonPath": "sequences/parkchester-3.json" }
+  ]
+}
