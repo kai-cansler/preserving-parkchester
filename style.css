@@ -1,14 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&display=swap');
-
 * {
   box-sizing: border-box;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
 
 html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  font-family: 'Archivo', sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
   cursor: pointer;
   background-color: #F4F1EC;
   transition: background-color 0.6s ease;
@@ -29,9 +31,7 @@ html, body {
 .site-nav a {
   pointer-events: auto;
   text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 1rem;
+  font-size: 1.50rem;
   color: #7A3DDF;
   cursor: pointer;
 }
@@ -83,9 +83,9 @@ body.arrange-mode .layered-image.free:active {
   bottom: 24px;
   left: 32px;
   z-index: 200;
-  font-family: 'Archivo', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 500;
   font-size: 0.85rem;
   color: #fff;
   background: #7A3DDF;
@@ -132,70 +132,14 @@ body.arrange-mode .layered-image.free:active {
 }
 
 #layout-close {
-  font-family: 'Archivo', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 500;
   font-size: 0.85rem;
   padding: 8px 14px;
   border: 1px solid #222;
   background: #fff;
   cursor: pointer;
-}
-
-/*
- * Named slots: every image in sequences/*.json picks one of these by name
- * instead of carrying its own coordinates. Add a new slot here once, then
- * reuse its name from any sequence's JSON.
- */
-.slot-survey {
-  top: 20%;
-  left: 8%;
-  width: 38%;
-  z-index: 1;
-}
-
-.slot-calendar {
-  top: 20%;
-  left: 54%;
-  width: 38%;
-  z-index: 1;
-}
-
-/* Same position/size as .slot-calendar so it lands directly on top of it. */
-.slot-calendar-x {
-  top: 20%;
-  left: 54%;
-  width: 38%;
-  z-index: 2;
-  mix-blend-mode: multiply;
-}
-
-.slot-grid-1 {
-  top: 10%;
-  left: 8%;
-  width: 38%;
-  z-index: 1;
-}
-
-.slot-grid-2 {
-  top: 10%;
-  left: 54%;
-  width: 38%;
-  z-index: 1;
-}
-
-.slot-grid-3 {
-  top: 52%;
-  left: 8%;
-  width: 38%;
-  z-index: 1;
-}
-
-.slot-grid-4 {
-  top: 52%;
-  left: 54%;
-  width: 38%;
-  z-index: 1;
 }
 
 #text-layer {
@@ -219,8 +163,6 @@ body.arrange-mode .layered-image.free:active {
   bottom: 24px;
   right: 32px;
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: #7A3DDF;
   opacity: 0.7;
 }
@@ -254,8 +196,6 @@ body.text-page {
 
 .text-content h1 {
   font-size: 1.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   margin-bottom: 2rem;
 }
 

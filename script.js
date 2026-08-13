@@ -14,6 +14,13 @@ let sequences = [];
 let seqIndex = 0;
 let stepIndex = -1;
 
+// Every freeform image currently on screen: { el, spec }, in the order added.
+// Anchors always end up earlier in this list than whatever anchors to them,
+// since an image can only reference an anchor from an earlier step.
+let activeImages = [];
+// spec.id -> { el, spec }, for images other entries can anchor to (e.g. "calendar").
+let anchorRegistry = {};
+
 async function init() {
   const manifest = await fetch('sequences.json').then(r => r.json());
   const shuffled = shuffle(manifest.sequences);
@@ -42,6 +49,12 @@ async function init() {
     });
     layoutOverlay.addEventListener('click', (e) => e.stopPropagation());
   }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => activeImages.forEach(positionImage), 100);
+  });
 
   document.body.addEventListener('click', advance);
   advance();
@@ -80,8 +93,7 @@ function renderStep(seq, step, enteringNewSequence) {
   }
 
   if (step.mode === 'replace' || enteringNewSequence) {
-    stage.innerHTML = '';
-    textLayer.innerHTML = '';
+    clearStage();
   }
 
   (step.images || []).forEach((img) => addImage(seq.id, img));
@@ -89,37 +101,107 @@ function renderStep(seq, step, enteringNewSequence) {
   if (step.text) addText(step.text);
 }
 
+function clearStage() {
+  stage.innerHTML = '';
+  textLayer.innerHTML = '';
+  activeImages = [];
+  anchorRegistry = {};
+}
+
 // img.slot picks a fixed position/size defined once in style.css (e.g. "slot-survey").
 // Without a slot, img.top/img.left/img.width position it freely (used for the
 // progressively-layered Parkchester photos) — see README for the copy-paste template.
-// img.src is always just a filename inside that sequence's photos/<sequence-id>/ folder.
+// img.src is a filename inside photos/<img.folder or the sequence's own id>/ —
+// use img.folder to pull from a shared folder (e.g. "icons") instead of the
+// sequence's own photo folder.
+//
+// img.id names this image so a later image can lock onto it with img.anchor —
+// see "anchorLeft"/"anchorTop" below. Every freeform image, anchored or not, is
+// kept fully on screen: its position is clamped against its own actual
+// rendered size once the photo has loaded, and re-clamped on window resize.
 function addImage(seqId, img) {
   const el = document.createElement('img');
-  el.src = `photos/${seqId}/${img.src}`;
+  el.src = `photos/${img.folder || seqId}/${img.src}`;
   el.alt = img.alt || '';
   el.dataset.src = img.src;
 
   if (img.slot) {
     el.className = `layered-image slot-${img.slot}`;
-  } else {
-    el.className = 'layered-image free';
-    el.style.top = img.top || '10%';
-    el.style.left = img.left || '10%';
-    if (img.width) el.style.width = img.width;
-    if (img.zIndex) el.style.zIndex = img.zIndex;
-    if (img.blend) el.style.mixBlendMode = img.blend;
-    if (arrangeMode) {
-      el.draggable = false; // disable native image drag so our own drag handler receives the events
-      makeDraggable(el);
-    }
+    el.onerror = () => el.classList.add('missing');
+    stage.appendChild(el);
+    return;
   }
 
-  el.onerror = () => el.classList.add('missing');
+  el.className = 'layered-image free';
+  el.style.visibility = 'hidden'; // positioned once its real size is known, see below
+  if (img.width) el.style.width = img.width;
+  if (img.zIndex) el.style.zIndex = img.zIndex;
+  if (img.blend) el.style.mixBlendMode = img.blend;
+
+  if (arrangeMode && !img.anchor) {
+    el.draggable = false; // disable native image drag so our own drag handler receives the events
+    makeDraggable(el);
+  }
+
+  const record = { el, spec: img };
+  activeImages.push(record);
+  if (img.id) anchorRegistry[img.id] = record;
+
+  const place = () => {
+    el.style.visibility = 'visible';
+    positionImage(record);
+  };
+  el.onload = place;
+  el.onerror = () => {
+    el.classList.add('missing');
+    place();
+  };
+
   stage.appendChild(el);
 }
 
-// Arrange-mode only: drag a freeform image around the stage with the mouse,
-// tracking its position in percent so it stays correct at any window size.
+// Resolves spec.top/left (percent of stage) or spec.anchor (a fixed pixel
+// offset from another image's actual on-screen position), then nudges the
+// result so the image's real rendered box never crosses a stage edge.
+//
+// Anchored images are the exception: they always simply follow their anchor's
+// actual (already-clamped) position plus a fixed offset, with no clamping of
+// their own. Clamping an anchored image independently would let it drift away
+// from its anchor at extreme viewport sizes — exactly the drift this whole
+// anchor system exists to prevent.
+function positionImage(record) {
+  const { el, spec } = record;
+  const stageRect = stage.getBoundingClientRect();
+
+  if (spec.anchor) {
+    const anchor = anchorRegistry[spec.anchor];
+    if (!anchor) return;
+    const anchorRect = anchor.el.getBoundingClientRect();
+    el.style.left = `${(anchorRect.left - stageRect.left) + (spec.anchorLeft || 0)}px`;
+    el.style.top = `${(anchorRect.top - stageRect.top) + (spec.anchorTop || 0)}px`;
+    return;
+  }
+
+  const left = percentToPx(spec.left, stageRect.width, 10);
+  const top = percentToPx(spec.top, stageRect.height, 10);
+  const maxLeft = Math.max(0, stageRect.width - el.offsetWidth);
+  const maxTop = Math.max(0, stageRect.height - el.offsetHeight);
+  el.style.left = `${clamp(left, 0, maxLeft)}px`;
+  el.style.top = `${clamp(top, 0, maxTop)}px`;
+}
+
+function percentToPx(value, basis, fallbackPercent) {
+  const percent = typeof value === 'string' && value.endsWith('%') ? parseFloat(value) : fallbackPercent;
+  return (percent / 100) * basis;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+// Arrange-mode only: drag a freeform image around the stage with the mouse.
+// Anchored images (e.g. the X locked to the calendar) aren't draggable — move
+// the anchor and they follow automatically.
 function makeDraggable(el) {
   el.addEventListener('click', (e) => e.stopPropagation());
 
@@ -127,17 +209,14 @@ function makeDraggable(el) {
     e.preventDefault();
     e.stopPropagation();
 
-    const stageRect = stage.getBoundingClientRect();
     const startX = e.clientX;
     const startY = e.clientY;
-    const startTop = el.offsetTop;
     const startLeft = el.offsetLeft;
+    const startTop = el.offsetTop;
 
     function onMove(moveEvent) {
-      const deltaX = moveEvent.clientX - startX;
-      const deltaY = moveEvent.clientY - startY;
-      el.style.left = `${((startLeft + deltaX) / stageRect.width) * 100}%`;
-      el.style.top = `${((startTop + deltaY) / stageRect.height) * 100}%`;
+      el.style.left = `${startLeft + moveEvent.clientX - startX}px`;
+      el.style.top = `${startTop + moveEvent.clientY - startY}px`;
     }
 
     function onUp() {
@@ -151,13 +230,18 @@ function makeDraggable(el) {
 }
 
 // Arrange-mode only: reads back the current on-screen position of every
-// freeform image so it can be copy-pasted into the sequence's JSON.
+// draggable (non-anchored) freeform image so it can be copy-pasted into the
+// sequence's JSON, converted back to percent so it stays a starting point
+// rather than a viewport-specific pixel value.
 function showLayoutOverlay() {
-  const layout = Array.from(stage.querySelectorAll('.layered-image.free')).map((el) => ({
-    src: el.dataset.src,
-    top: el.style.top,
-    left: el.style.left,
-  }));
+  const stageRect = stage.getBoundingClientRect();
+  const layout = activeImages
+    .filter(({ spec }) => !spec.anchor)
+    .map(({ el, spec }) => ({
+      src: spec.src,
+      top: `${((el.offsetTop / stageRect.height) * 100).toFixed(4)}%`,
+      left: `${((el.offsetLeft / stageRect.width) * 100).toFixed(4)}%`,
+    }));
   layoutOutput.value = JSON.stringify(layout, null, 2);
   layoutOverlay.hidden = false;
   layoutOutput.focus();
@@ -174,7 +258,7 @@ function addText(text) {
 }
 
 function renderEnd() {
-  stage.innerHTML = '';
+  clearStage();
   textLayer.innerHTML = '<div class="step-text end">End.</div>';
   hint.style.display = 'none';
   document.body.removeEventListener('click', advance);

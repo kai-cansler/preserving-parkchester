@@ -3,17 +3,68 @@
     "mode": "replace",
     "background": "#F4F1EC",
     "images": [
-      { "slot": "survey", "src": "survey.jpg" },
-      { "slot": "calendar", "src": "calendar.jpg" }
+      { "src": "survey-icon.png", "folder": "icons", "top": "26.3354%", "left": "28.9062%", "width": "200px" },
+      { "id": "calendar", "src": "calendar-arrow-icon.png", "folder": "icons", "top": "26.2112%", "left": "31.0764%", "width": "520px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "check-icon.png", "folder": "icons", "anchor": "calendar", "anchorTop": -24.3, "anchorLeft": 275.42, "width": "320px" }
     ]
   },
   {
     "mode": "replace",
     "images": [
-      { "slot": "grid-1", "src": "grid-1.jpg" },
-      { "slot": "grid-2", "src": "grid-2.jpg" },
-      { "slot": "grid-3", "src": "grid-3.jpg" },
-      { "slot": "grid-4", "src": "grid-4.jpg" }
+      { "src": "MP1_1.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_2.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_3.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_4.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_5.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_7.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_8.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_9.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+    ]
+  },
+  {
+    "mode": "layer",
+    "images": [
+      { "src": "MP1_10.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
     ]
   }
 ]
