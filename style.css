@@ -175,6 +175,7 @@ body.arrange-mode .layered-image.free:active {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  color: #1D57D9;
 }
 
 @keyframes fade-in {
