@@ -16,55 +16,55 @@
   {
     "mode": "replace",
     "images": [
-      { "src": "MP1_1.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_1.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_2.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_2.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_3.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_3.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_4.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_4.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_5.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_5.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_7.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_7.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_8.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_8.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_9.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_9.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   },
   {
     "mode": "layer",
     "images": [
-      { "src": "MP1_10.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "30%", "width": "750px" }
+      { "src": "MP1_10.jpg", "folder": "manhattan-path-1", "top": "10%", "left": "center", "width": "750px" }
     ]
   }
 ]

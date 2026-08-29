@@ -24,14 +24,14 @@ html, body {
   z-index: 100;
   display: flex;
   justify-content: space-between;
-  padding: 32px 40px;
+  padding: 32px 100px;
   pointer-events: none;
 }
 
 .site-nav a {
   pointer-events: auto;
   text-decoration: none;
-  font-size: 1.50rem;
+  font-size: 2.00rem;
   color: #7A3DDF;
   cursor: pointer;
 }
@@ -169,8 +169,10 @@ body.arrange-mode .layered-image.free:active {
 
 .step-text.end {
   font-size: 2rem;
-  top: 45%;
-  left: 45%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 
 @keyframes fade-in {
@@ -181,26 +183,86 @@ body.arrange-mode .layered-image.free:active {
 
 /* Sources / About: plain readable text pages, not part of the click-to-advance stage. */
 body.text-page {
+  position: relative; /* makes this element (the actual scroll container, see below) the
+                          containing block for .site-nav's absolute positioning */
   cursor: auto;
   overflow: auto;
-  padding: 140px 10% 100px;
+  padding: 120px 100px 100px;
+}
+
+/* html keeps overflow:hidden (needed on the click-to-advance sequence pages),
+   which means body — not the page/viewport — is the thing that actually
+   scrolls here. So the nav sits at the top of body's own content instead of
+   the viewport, and scrolls away with the rest of the content as body
+   scrolls, instead of staying pinned like it does on the sequence pages. */
+body.text-page .site-nav {
+  position: absolute;
 }
 
 .text-content {
-  max-width: 65ch;
+  max-width: 100%;
   margin: 0 auto;
-  color: #222;
-  font-size: 1.05rem;
-  line-height: 1.6;
+  color: #1D57D9;
+  font-size: 2.00rem;
+  line-height: 1.25;
 }
 
 .text-content h1 {
-  font-size: 1.75rem;
+  font-size: 2.5rem;
+  font-weight: 400;
   margin-bottom: 2rem;
 }
 
+/* Entrance animation for About/Sources — the pages reached by clicking a nav
+   link, as opposed to the click-to-advance sequence pages, which don't use
+   this. Nav links fade in one at a time, then the heading, then the body
+   text as a group. */
+body.text-page .site-nav a {
+  opacity: 0;
+  animation: nav-fade-in 0.5s ease forwards;
+}
+
+body.text-page .site-nav > a {
+  animation-delay: 0.1s;
+}
+
+body.text-page .nav-right a:nth-child(1) {
+  animation-delay: 0.22s;
+}
+
+body.text-page .nav-right a:nth-child(2) {
+  animation-delay: 0.34s;
+}
+
+body.text-page .text-content h1 {
+  opacity: 0;
+  animation: content-fade-in 0.6s ease 0.55s forwards;
+}
+
+body.text-page .text-content > *:not(h1) {
+  opacity: 0;
+  animation: content-fade-in 0.6s ease 0.85s forwards;
+}
+
+@keyframes nav-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes content-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .text-content p {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .source-list {

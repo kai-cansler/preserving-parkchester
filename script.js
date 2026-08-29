@@ -23,10 +23,9 @@ let anchorRegistry = {};
 
 async function init() {
   const manifest = await fetch('sequences.json').then(r => r.json());
-  const shuffled = shuffle(manifest.sequences);
 
   sequences = await Promise.all(
-    shuffled.map(async (seq) => ({
+    manifest.sequences.map(async (seq) => ({
       ...seq,
       steps: await fetch(seq.jsonPath).then(r => r.json()),
     }))
@@ -60,28 +59,36 @@ async function init() {
   advance();
 }
 
-function shuffle(list) {
-  const copy = [...list];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
+// True once the last sequence (Manhattan) finishes and the "how many
+// sculptures" screen is showing. The next click restarts from the top
+// instead of advancing a step, inviting a second look-through.
+let atEnd = false;
 
 function advance() {
+  if (atEnd) {
+    atEnd = false;
+    seqIndex = 0;
+    stepIndex = -1;
+  }
+
   stepIndex++;
   let seq = sequences[seqIndex];
   let enteringNewSequence = stepIndex === 0;
 
-  if (!seq) return renderEnd();
+  if (!seq) {
+    atEnd = true;
+    return renderEnd();
+  }
 
   if (stepIndex >= seq.steps.length) {
     seqIndex++;
     stepIndex = 0;
     seq = sequences[seqIndex];
     enteringNewSequence = true;
-    if (!seq) return renderEnd();
+    if (!seq) {
+      atEnd = true;
+      return renderEnd();
+    }
   }
 
   renderStep(seq, seq.steps[stepIndex], enteringNewSequence);
@@ -182,10 +189,15 @@ function positionImage(record) {
     return;
   }
 
-  const left = percentToPx(spec.left, stageRect.width, 10);
-  const top = percentToPx(spec.top, stageRect.height, 10);
   const maxLeft = Math.max(0, stageRect.width - el.offsetWidth);
   const maxTop = Math.max(0, stageRect.height - el.offsetHeight);
+
+  // "center" is resolved from the image's actual rendered size, so it stays
+  // truly centered at any viewport width — a fixed percentage can only line
+  // up at the one viewport width it was measured against, since width is a
+  // fixed pixel value rather than also being a percentage.
+  const left = spec.left === 'center' ? maxLeft / 2 : percentToPx(spec.left, stageRect.width, 10);
+  const top = spec.top === 'center' ? maxTop / 2 : percentToPx(spec.top, stageRect.height, 10);
   el.style.left = `${clamp(left, 0, maxLeft)}px`;
   el.style.top = `${clamp(top, 0, maxTop)}px`;
 }
@@ -259,9 +271,7 @@ function addText(text) {
 
 function renderEnd() {
   clearStage();
-  textLayer.innerHTML = '<div class="step-text end">End.</div>';
-  hint.style.display = 'none';
-  document.body.removeEventListener('click', advance);
+  textLayer.innerHTML = '<div class="step-text end">How many sculptures did you spot?</div>';
 }
 
 init();
