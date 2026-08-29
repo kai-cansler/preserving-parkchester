@@ -58,10 +58,11 @@ locally; regular visitors never see the button or the dragging.
 
 Plain static HTML/CSS/JS, deployable straight to GitHub Pages.
 
-- `index.html` / `style.css` / `script.js` — the whole engine. On load it shuffles the four
-  sequences and picks one to play first. Each click on the page advances one step. When a
-  sequence's steps run out, it moves to the next (randomly ordered) sequence, until all four
-  have played.
+- `index.html` / `style.css` / `script.js` — the whole engine. Sequences always play in the
+  fixed order listed in `sequences.json` (Parkchester I → II → III → Manhattan). Each click
+  advances one step; when a sequence's steps run out it moves to the next one. After the last
+  sequence, it shows "How many sculptures did you spot?" and the next click restarts from the
+  top, rather than ending for good.
 - `sequences.json` — manifest listing the four sequences (ids `manhattan-path-1`,
   `parkchester-path-1`, `parkchester-path-2`, `parkchester-path-3` — these match the `photos/`
   folder names) and where their step data lives.
@@ -84,9 +85,20 @@ Plain static HTML/CSS/JS, deployable straight to GitHub Pages.
   - `src` is a filename. By default the engine looks for it inside the sequence's own photo
     folder (`photos/<sequence-id>/`); add `"folder": "icons"` (or any other folder name under
     `photos/`) to pull from a shared folder instead.
-  - `top` / `left` / `width` position the image freely — see the drag tool above. `slot` is
-    still supported as an alternative for a fixed, non-draggable position defined once in
-    `style.css` (search for `.slot-`), currently unused but available for a future screen.
+  - `top` / `left` / `width` position the image freely — see the drag tool above. `left`/`top`
+    can also be `"center"` to center the image based on its real rendered size (stays centered
+    at any viewport width, unlike a fixed percentage). `slot` is still supported as an
+    alternative for a fixed, non-draggable position defined once in `style.css` (search for
+    `.slot-`), currently unused but available for a future screen.
+  - `"id": "calendar"` names an image so another one can lock onto it with `"anchor":
+    "calendar"` plus `anchorLeftPercent` / `anchorTopPercent` — offsets as a percentage of the
+    anchor's own rendered width/height (not the stage), so the locked-on image (the X/checkmark
+    on the calendar) always lands in the same relative spot no matter how big or small the
+    anchor itself is rendering.
+  - `"mobile": { "top": ..., "left": ..., "width": ... }` overrides any of those three at or
+    below 700px-wide screens. Used for the Survey/Calendar intro, which is stacked vertically
+    on phones instead of side by side — most images don't need this; they just shrink to fit
+    (see `max-width: 92vw` in `style.css`) without needing a different layout.
   - `text` is optional, for sequences (like Manhattan) that pair images with captions.
 
 To add or edit a screen: edit the relevant `sequences/*.json` file — no HTML or JS changes needed.

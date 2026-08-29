@@ -115,12 +115,25 @@ function clearStage() {
   anchorRegistry = {};
 }
 
+// Below this width, positionImage() uses img.mobile overrides (if present)
+// instead of the top-level top/left/width — see addImage() below.
+const MOBILE_BREAKPOINT = 700;
+
+function isMobileViewport() {
+  return window.innerWidth <= MOBILE_BREAKPOINT;
+}
+
 // img.slot picks a fixed position/size defined once in style.css (e.g. "slot-survey").
 // Without a slot, img.top/img.left/img.width position it freely (used for the
 // progressively-layered Parkchester photos) — see README for the copy-paste template.
 // img.src is a filename inside photos/<img.folder or the sequence's own id>/ —
 // use img.folder to pull from a shared folder (e.g. "icons") instead of the
 // sequence's own photo folder.
+//
+// img.mobile can hold { top, left, width } to use instead, at or below
+// MOBILE_BREAKPOINT — for compositions (like the side-by-side Survey/Calendar
+// intro) that need a genuinely different layout on a narrow phone screen
+// rather than just a smaller version of the desktop one.
 //
 // img.id names this image so a later image can lock onto it with img.anchor —
 // see "anchorLeft"/"anchorTop" below. Every freeform image, anchored or not, is
@@ -141,7 +154,6 @@ function addImage(seqId, img) {
 
   el.className = 'layered-image free';
   el.style.visibility = 'hidden'; // positioned once its real size is known, see below
-  if (img.width) el.style.width = img.width;
   if (img.zIndex) el.style.zIndex = img.zIndex;
   if (img.blend) el.style.mixBlendMode = img.blend;
 
@@ -167,25 +179,40 @@ function addImage(seqId, img) {
   stage.appendChild(el);
 }
 
-// Resolves spec.top/left (percent of stage) or spec.anchor (a fixed pixel
-// offset from another image's actual on-screen position), then nudges the
-// result so the image's real rendered box never crosses a stage edge.
+// Resolves spec.top/left (percent of stage) or spec.anchor (an offset from
+// another image's actual on-screen position), then nudges the result so the
+// image's real rendered box never crosses a stage edge.
 //
 // Anchored images are the exception: they always simply follow their anchor's
-// actual (already-clamped) position plus a fixed offset, with no clamping of
+// actual (already-clamped) position plus an offset, with no clamping of
 // their own. Clamping an anchored image independently would let it drift away
 // from its anchor at extreme viewport sizes — exactly the drift this whole
 // anchor system exists to prevent.
 function positionImage(record) {
   const { el, spec } = record;
   const stageRect = stage.getBoundingClientRect();
+  // Re-checked on every call (including on resize), so crossing the
+  // breakpoint live — e.g. rotating a tablet, or resizing a dev window —
+  // picks up the right layout rather than getting stuck with whichever
+  // applied on load.
+  const mobile = isMobileViewport() ? spec.mobile : null;
+
+  const width = (mobile && mobile.width) || spec.width;
+  if (width) el.style.width = width;
 
   if (spec.anchor) {
     const anchor = anchorRegistry[spec.anchor];
     if (!anchor) return;
     const anchorRect = anchor.el.getBoundingClientRect();
-    el.style.left = `${(anchorRect.left - stageRect.left) + (spec.anchorLeft || 0)}px`;
-    el.style.top = `${(anchorRect.top - stageRect.top) + (spec.anchorTop || 0)}px`;
+    // anchorLeftPercent/anchorTopPercent are percentages of the anchor's own
+    // rendered size, not fixed pixels — the anchor can render at different
+    // sizes (e.g. shrunk by max-width, or repositioned by its own "mobile"
+    // override, on a narrow phone screen), and a fixed pixel offset
+    // calibrated for its desktop size would drift off it there.
+    const offsetLeft = ((spec.anchorLeftPercent || 0) / 100) * anchorRect.width;
+    const offsetTop = ((spec.anchorTopPercent || 0) / 100) * anchorRect.height;
+    el.style.left = `${(anchorRect.left - stageRect.left) + offsetLeft}px`;
+    el.style.top = `${(anchorRect.top - stageRect.top) + offsetTop}px`;
     return;
   }
 
@@ -196,8 +223,10 @@ function positionImage(record) {
   // truly centered at any viewport width — a fixed percentage can only line
   // up at the one viewport width it was measured against, since width is a
   // fixed pixel value rather than also being a percentage.
-  const left = spec.left === 'center' ? maxLeft / 2 : percentToPx(spec.left, stageRect.width, 10);
-  const top = spec.top === 'center' ? maxTop / 2 : percentToPx(spec.top, stageRect.height, 10);
+  const leftSpec = (mobile && mobile.left) || spec.left;
+  const topSpec = (mobile && mobile.top) || spec.top;
+  const left = leftSpec === 'center' ? maxLeft / 2 : percentToPx(leftSpec, stageRect.width, 10);
+  const top = topSpec === 'center' ? maxTop / 2 : percentToPx(topSpec, stageRect.height, 10);
   el.style.left = `${clamp(left, 0, maxLeft)}px`;
   el.style.top = `${clamp(top, 0, maxTop)}px`;
 }

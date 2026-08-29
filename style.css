@@ -53,6 +53,8 @@ html, body {
 .layered-image {
   position: absolute;
   height: auto;
+  max-width: 92vw; /* images are sized in fixed px for desktop; this keeps
+                       them from overflowing a narrow phone screen */
   opacity: 0;
   animation: fade-in 0.6s ease forwards;
 }
@@ -271,4 +273,52 @@ body.text-page .text-content > *:not(h1) {
 
 .source-list li {
   margin-bottom: 1rem;
+}
+
+/* Phones and small tablets: the desktop layout's padding and type sizes are
+   tuned for a much wider screen, so scale them down here rather than let
+   things overflow or crowd the edges. */
+@media (max-width: 700px) {
+  .site-nav {
+    padding: 16px 20px;
+  }
+
+  .site-nav a {
+    font-size: 1.1rem;
+  }
+
+  .nav-right {
+    gap: 16px;
+  }
+
+  .layered-image.free {
+    width: 260px;
+  }
+
+  body.text-page {
+    padding: 90px 24px 60px;
+  }
+
+  .text-content {
+    font-size: 1.05rem;
+  }
+
+  .text-content h1 {
+    font-size: 1.6rem;
+  }
+
+  .step-text {
+    font-size: 1.1rem;
+    max-width: 80vw;
+  }
+
+  .step-text.end {
+    font-size: 1.4rem;
+    max-width: 80vw;
+  }
+
+  #hint {
+    right: 16px;
+    bottom: 16px;
+  }
 }
