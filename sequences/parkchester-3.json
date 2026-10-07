@@ -3,7 +3,7 @@
     "mode": "replace",
     "background": "#F4F1EC",
     "images": [
-      { "src": "survey-icon.png", "folder": "icons", "top": "26.3354%", "left": "28.9062%", "width": "200px", "mobile": { "top": "18%", "left": "5%", "width": "75px" } },
+      { "src": "survey-icon.png", "folder": "icons", "top": "26.3354%", "left": "28.9062%", "width": "200px", "mobile": { "top": "15%", "left": "30%", "width": "50px" } },
       { "id": "calendar", "src": "calendar-arrow-icon.png", "folder": "icons", "top": "26.2112%", "left": "31.0764%", "width": "520px", "mobile": { "top": "18%", "left": "33%", "width": "180px" } }
     ]
   },
